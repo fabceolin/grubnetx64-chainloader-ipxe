@@ -1,6 +1,8 @@
 #cloud-config
 autoinstall:
   version: 1
+  early-commands:
+    - systemctl stop ssh
   locale: en_US
   identity:
     hostname: ubuntu
@@ -14,17 +16,23 @@ autoinstall:
       version: 2
       ethernets:
         enp0s3:
-          dhcp4: true
+          dhcp4: false
+          dhcp-identifier: mac
+  apt:
+    preserve_sources_list: false
+    primary:
+      - arches: [amd64]
+        uri: "http://archive.ubuntu.com/ubuntu/"
   storage:
     layout:
       name: lvm
+  packages:
+    - openssh-server
   ssh:
-    install-server: false
+    install-server: true
     allow-pw: true
   user-data:
     disable_root: false
   late-commands:
-    - echo ""
     - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
-    - 'sed -i "s/dhcp4: true/&\n      dhcp-identifier: mac/" /target/etc/netplan/00-installer-config.yaml'
-
+    - "sed -i 's/dhcp4: false/dhcp4: true/g' /target/etc/netplan/00-installer-config.yaml"
