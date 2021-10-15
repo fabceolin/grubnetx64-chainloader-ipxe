@@ -6,7 +6,7 @@
         "apt-get update -y",
       "apt-get install software-properties-common -y",
       "add-apt-repository universe",
-      "apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe" 
+      "apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server" 
       ]
     }
   ],
@@ -24,7 +24,9 @@
       "iso_checksum": "sha256:f8e3086f3cea0fb3fefb29937ab5ed9d19e767079633960ccb50e76153effc98",
       "ssh_username": "ubuntu",
       "ssh_password": "ubuntu",
-      "shutdown_command": "echo 'ubuntu' | sudo -S shutdown -P now",
+      "ssh_wait_timeout": "15m",
+      "ssh_timeout": "30m",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
       "firmware":"efi",
       "nested_virt": "true",
       "disk_size": "10000",
@@ -32,6 +34,7 @@
       "iso_interface": "sata",
       "memory":"1024",
       "communicator": "ssh",
+      "nic_type": "virtio",
       "boot_command": [
         "<esc>",
         "linux /casper/vmlinuz autoinstall ds='nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'",
@@ -42,7 +45,17 @@
         "<enter>"
       ],
       "http_directory": "subiquity/http",
-      "boot_wait": "5s"
+      "boot_wait": "5s",
+
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--acpi", "on"],
+        ["modifyvm", "{{.Name}}", "--ioapic", "on"],
+        ["modifyvm", "{{.Name}}", "--longmode", "on"],
+        ["modifyvm", "{{.Name}}", "--cpus", "1"],
+        ["modifyvm", "{{.Name}}", "--nic1", "nat"],
+        ["modifyvm", "{{.Name}}", "--vrde", "on"],
+        ["modifyvm", "{{.Name}}", "--vrdeaddress", "10.0.250.10"]
+      ]
     }
   ]
 }

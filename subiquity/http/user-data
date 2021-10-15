@@ -2,6 +2,10 @@
 autoinstall:
   version: 1
   locale: en_US
+  identity:
+    hostname: ubuntu
+    username: ubuntu
+    password: $6$rounds=4096$8dkK1P/oE$2DGKKt0wLlTVJ7USY.0jN9du8FetmEr51yjPyeiR.zKE3DGFcitNL/nF1l62BLJNR87lQZixObuXYny.Mf17K1
   keyboard:
     layout: en
     variant: us
@@ -9,30 +13,18 @@ autoinstall:
     network:
       version: 2
       ethernets:
-        ens3:
+        enp0s3:
           dhcp4: true
   storage:
     layout:
       name: lvm
-  identity:
-    hostname: ubuntu
-    username: ubuntu
-    password: $6$rounds=4096$8dkK1P/oE$2DGKKt0wLlTVJ7USY.0jN9du8FetmEr51yjPyeiR.zKE3DGFcitNL/nF1l62BLJNR87lQZixObuXYny.Mf17K1
   ssh:
-    install-server: yes
+    install-server: false
+    allow-pw: true
   user-data:
     disable_root: false
-  packages:
-    - ltsp 
-    - ltsp-binaries 
-    - dnsmasq 
-    - nfs-kernel-server 
-    - openssh-server 
-    - squashfs-tools 
-    - ethtool 
-    - net-tools 
-    - epoptes
   late-commands:
+    - echo ""
     - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
     - 'sed -i "s/dhcp4: true/&\n      dhcp-identifier: mac/" /target/etc/netplan/00-installer-config.yaml'
 
