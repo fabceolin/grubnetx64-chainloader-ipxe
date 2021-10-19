@@ -6,7 +6,7 @@
       "bash -c 'time (while ps -opid= -C apt-get > /dev/null; do sleep 1; done); sudo apt-get -y update'",
       "sudo apt-get install software-properties-common -y",
       "sudo add-apt-repository universe",
-      "sudo apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server" 
+      "sudo apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server isc-dhcp-server" 
       ]
     }
   ],
@@ -62,7 +62,9 @@
         ["modifyvm", "{{.Name}}", "--vrde", "on"],
         ["modifyvm", "{{.Name}}", "--audio", "none"],
         ["modifyvm", "{{.Name}}", "--usb", "off"],
-        ["modifyvm", "{{.Name}}", "--vrdeaddress", "10.0.250.10"]
+        ["modifyvm", "{{.Name}}", "--vrdeaddress", "10.0.250.10"],
+        ["modifyvm", "{{.Name}}", "--vram", "12"],
+        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"]
       ]
     }
   ]
