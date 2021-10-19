@@ -6,7 +6,11 @@
       "bash -c 'time (while ps -opid= -C apt-get > /dev/null; do sleep 1; done); sudo apt-get -y update'",
       "sudo apt-get install software-properties-common -y",
       "sudo add-apt-repository universe",
-      "sudo apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server isc-dhcp-server" 
+      "sudo apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server isc-dhcp-server" ,
+      "sudo ltsp dnsmasq --proxy-dhcp=0",
+      "sudo ltsp image /,,/boot,subdir=boot,,/opt,subdir=opt",
+      "sudo ltsp ipxe",
+      "sudo ltsp initrd"
       ]
     }
   ],
@@ -32,7 +36,7 @@
       "shutdown_command": "echo 'ubuntu' | sudo -S shutdown -P now",
       "firmware":"efi",
       "nested_virt": "true",
-      "disk_size": "10000",
+      "disk_size": "20000",
       "vrdp_bind_address": "0.0.0.0",
       "iso_interface": "sata",
       "memory":"1024",
