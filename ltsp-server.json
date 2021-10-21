@@ -1,0 +1,78 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [ 
+      "bash -c 'time (while ps -opid= -C apt-get > /dev/null; do sleep 1; done); sudo apt-get -y update'",
+      "sudo apt-get install software-properties-common -y",
+      "sudo add-apt-repository universe",
+      "sudo apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server isc-dhcp-server" ,
+      "sudo ltsp dnsmasq --proxy-dhcp=0",
+      "sudo ltsp image /,,/boot,subdir=boot,,/opt,subdir=opt",
+      "sudo ltsp ipxe",
+      "sudo ltsp nfs",
+      "sudo ltsp initrd"
+      ]
+    }
+  ],
+
+
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Ubuntu_64",
+      "vm_name": "ltsp-server",
+      "iso_urls": [
+        "ubuntu-20.04.3-live-server-amd64.iso",
+        "https://releases.ubuntu.com/20.04/ubuntu-20.04.3-live-server-amd64.iso"
+      ],
+
+      "iso_checksum": "sha256:f8e3086f3cea0fb3fefb29937ab5ed9d19e767079633960ccb50e76153effc98",
+      "ssh_username": "ubuntu",
+      "ssh_password": "ubuntu",
+      "ssh_wait_timeout": "15m",
+      "ssh_handshake_attempts": "50",
+      "ssh_port": "22",
+      "ssh_pty": true,
+      "ssh_timeout": "1h",
+      "shutdown_command": "echo 'ubuntu' | sudo -S shutdown -P now",
+      "firmware":"efi",
+      "nested_virt": "true",
+      "disk_size": "20000",
+      "vrdp_bind_address": "0.0.0.0",
+      "iso_interface": "sata",
+      "memory":"1024",
+      "communicator": "ssh",
+      "nic_type": "virtio",
+      "boot_command": [
+        "<esc>",
+        "linux /casper/vmlinuz autoinstall ds='nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'",
+        "<enter>",
+        "initrd /casper/initrd",
+        "<enter>",
+        "boot",
+        "<enter>"
+      ],
+      "http_directory": "subiquity/http",
+      "boot_wait": "5s",
+
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--acpi", "on"],
+        ["modifyvm", "{{.Name}}", "--ioapic", "on"],
+        ["modifyvm", "{{.Name}}", "--longmode", "on"],
+        ["modifyvm", "{{.Name}}", "--cpus", "1"],
+        ["modifyvm", "{{.Name}}", "--nic1", "nat"],
+        ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+        ["modifyvm", "{{.Name}}", "--nic2", "intnet"],
+        ["modifyvm", "{{.Name}}", "--nictype2", "virtio"],
+        ["modifyvm", "{{.Name}}", "--vrde", "on"],
+        ["modifyvm", "{{.Name}}", "--audio", "none"],
+        ["modifyvm", "{{.Name}}", "--usb", "off"],
+        ["modifyvm", "{{.Name}}", "--vrdeaddress", "10.0.250.10"],
+        ["modifyvm", "{{.Name}}", "--vram", "12"],
+        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
+        ["modifyvm", "{{.Name}}", "--natpf1", "guest_ssh,tcp,,3022,,22" ]
+      ]
+    }
+  ]
+}

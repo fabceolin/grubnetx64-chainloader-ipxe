@@ -1,0 +1,47 @@
+---
+- hosts: all                                                                                                                                        
+   # site comandos windows => https://www.windows-commandline.com/                                                                                   
+  gather_facts: true                                                                                                                                
+  become: yes
+  vars:                                                                                                                                             
+     ansible_user: ubuntu                                                                                                                           
+     remote_user: ubuntu
+     become: true 
+     become_user: root
+     ansible_port: 3022                                                                                                                             
+     ansible_ssh_extra_args: '-o StricthostKeyChecking=no'                                                                                           
+     ansible_host_key_checking: False                                                                                                                
+     ansible_ssh_host_key_checking: False                                                                                                            
+     host_key_checking: False                                                                                                                        
+     ssh_host_key_checking: False                                                                                                                    
+
+  tasks:
+
+    - name: setup dnsmasq 
+      ansible.builtin.copy:
+        src: etc/dnsmasq.d/ltsp-dnsmasq.conf
+        dest: /etc/dnsmasq.d/ltsp-dnsmasq.conf
+
+    - name: Restart dnsmasq
+      ansible.builtin.service:
+        name: dnsmasq
+        state: restarted
+        enabled: yes
+
+    - name: copy grub and pxe to tftp folder
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /usr/lib/grub/x86_64-efi/monolithic/grubnetx64.efi
+        dest: /srv/tftp/ltsp
+
+    - name: copy grub and pxe to tftp folder
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /usr/lib/grub/
+        dest: /srv/tftp/grub
+
+    - name: copy grub config 
+      ansible.builtin.copy:
+        src: srv/tftp/ltsp/grub.conf
+        dest: /srv/tftp/grub/grub.cfg
+
