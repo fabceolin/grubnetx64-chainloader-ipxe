@@ -45,3 +45,18 @@
         src: srv/tftp/ltsp/grub.conf
         dest: /srv/tftp/grub/grub.cfg
 
+    - name: Download hirens boot winpe
+      get_url:
+        url: https://www.hirensbootcd.org/files/HBCD_PE_x64.iso
+        dest: /src/tftp/
+
+    - name: Uncompress hirens iso
+      shell: |
+        7z x -y /src/tftp/HBCD_PE_x64.iso -o /src/tftp/winpe/ 
+        chmod 755 -R /src/tftp/winpe/
+
+    - name: Download wimboot
+      get_url:
+        url: https://github.com/ipxe/wimboot/releases/latest/download/wimboot
+        dest: /src/tftp/
+

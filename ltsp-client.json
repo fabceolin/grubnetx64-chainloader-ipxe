@@ -1,11 +1,4 @@
 {
-  "provisioners": [
-    {
-      "type": "shell",
-      "inline": [ "" ]
-    }
-  ],
-
 
   "builders": [
     {
@@ -13,38 +6,61 @@
       "guest_os_type": "Ubuntu_64",
       "vm_name": "ltsp-client",
       "output_directory": "output-ltsp-client",
-      "iso_urls": [
-        "ubuntu-20.04.3-live-server-amd64.iso",
-        "https://releases.ubuntu.com/20.04/ubuntu-20.04.3-live-server-amd64.iso"
-      ],
-
-      "iso_checksum": "sha256:f8e3086f3cea0fb3fefb29937ab5ed9d19e767079633960ccb50e76153effc98",
-      "ssh_username": "ubuntu",
-      "ssh_password": "ubuntu",
-      "ssh_wait_timeout": "15m",
-      "ssh_handshake_attempts": "50",
-      "ssh_port": "22",
-      "ssh_pty": true,
-      "ssh_timeout": "1h",
-      "shutdown_command": "echo 'ubuntu' | sudo -S shutdown -P now",
       "firmware":"efi",
       "nested_virt": "true",
-      "disk_size": "20000",
+      "disk_size": "100",
       "vrdp_bind_address": "0.0.0.0",
-      "iso_interface": "sata",
+      "virtualbox_version_file": "",
+      "guest_additions_mode": "disable",
       "memory":"1024",
-      "communicator": "ssh",
+      "communicator": "none",
       "nic_type": "virtio",
-      "boot_command": [
-        "<esc>",
-        "linux /casper/vmlinuz autoinstall ds='nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/'",
-        "<enter>",
-        "initrd /casper/initrd",
-        "<enter>",
-        "boot",
-        "<enter>"
+      "iso_urls": [
+        "Core-current.iso",
+        "http://tinycorelinux.net/12.x/x86/release/Core-current.iso"
       ],
-      "http_directory": "subiquity/http",
+      "iso_checksum": "sha256:cd9bd5bd06902f7fb0ab97e5024246d3a142a49a6d70cd95b58f95b356843c33",
+      "boot_command": [
+        "<down>",
+        "<enter>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<down>",
+        "<wait1m>",
+        "<enter>",
+        "<down>",
+        "<enter>",
+        "<enter>",
+        "<enter>",
+        "<wait1m>",
+        "poweroff"
+      ],
       "boot_wait": "5s",
 
       "vboxmanage": [
@@ -60,7 +76,8 @@
         ["modifyvm", "{{.Name}}", "--vrdeaddress", "10.0.250.10"],
         ["modifyvm", "{{.Name}}", "--vram", "12"],
         ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
-        ["modifyvm", "{{.Name}}", "--boot1", "net"]
+        ["modifyvm", "{{.Name}}", "--boot1", "dvd"],
+        ["modifyvm", "{{.Name}}", "--boot2", "net"]
       ]
     }
   ]
