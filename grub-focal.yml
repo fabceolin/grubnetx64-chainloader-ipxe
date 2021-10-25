@@ -1,15 +1,13 @@
 ---
 - hosts: all                                                                                                                                        
-   # site comandos windows => https://www.windows-commandline.com/                                                                                   
   gather_facts: true                                                                                                                                
-  become: yes
+  become: true
   vars:                                                                                                                                             
      ansible_user: ubuntu                                                                                                                           
      remote_user: ubuntu
-     become: true 
      become_user: root
      ansible_port: 3022                                                                                                                             
-     ansible_ssh_extra_args: '-o StricthostKeyChecking=no'                                                                                           
+     ansible_ssh_extra_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'                                                                                           
      ansible_host_key_checking: False                                                                                                                
      ansible_ssh_host_key_checking: False                                                                                                            
      host_key_checking: False                                                                                                                        

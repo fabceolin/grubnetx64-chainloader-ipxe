@@ -3,6 +3,7 @@ autoinstall:
   version: 1
   early-commands:
     - systemctl stop ssh
+    - timedatectl set-ntp yes
   locale: en_US
   identity:
     hostname: ubuntu
@@ -24,7 +25,7 @@ autoinstall:
     preserve_sources_list: false
     primary:
       - arches: [amd64]
-        uri: "http://br.archive.ubuntu.com/ubuntu/"
+        uri: "http://archive.ubuntu.com/ubuntu/"
   storage:
     layout:
       name: lvm
