@@ -42,20 +42,3 @@
       ansible.builtin.copy:
         src: srv/tftp/ltsp/grub.conf
         dest: /srv/tftp/grub/grub.cfg
-
-    - name: Download hirens boot winpe
-      get_url:
-        url: https://www.hirensbootcd.org/files/HBCD_PE_x64.iso
-        dest: /srv/tftp/
-
-    - name: Uncompress hirens iso
-      shell: |
-        mkdir -p /srv/tftp/winpe
-        7z x -y /srv/tftp/HBCD_PE_x64.iso -o/srv/tftp/winpe/ 
-        chmod 755 -R /srv/tftp/winpe/
-
-    - name: Download wimboot
-      get_url:
-        url: https://github.com/ipxe/wimboot/releases/latest/download/wimboot
-        dest: /srv/tftp/
-

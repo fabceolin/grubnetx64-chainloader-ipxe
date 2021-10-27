@@ -15,52 +15,24 @@
       "memory":"1024",
       "communicator": "none",
       "nic_type": "virtio",
+
       "iso_urls": [
-        "Core-current.iso",
-        "http://tinycorelinux.net/12.x/x86/release/Core-current.iso"
+        "ubuntu-20.04.3-live-server-amd64.iso",
+        "https://releases.ubuntu.com/20.04/ubuntu-20.04.3-live-server-amd64.iso"
       ],
-      "iso_checksum": "sha256:cd9bd5bd06902f7fb0ab97e5024246d3a142a49a6d70cd95b58f95b356843c33",
+
+      "iso_checksum": "sha256:f8e3086f3cea0fb3fefb29937ab5ed9d19e767079633960ccb50e76153effc98",
+
       "boot_command": [
-        "<down>",
+        "<esc>",
+        "linux /casper/vmlinuz autoinstall ds='nocloud-net;seedfrom=http://{{ .HTTPIP }}:{{ .HTTPPort }}/' init=/bin/poweroff",
         "<enter>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<down>",
-        "<wait1m>",
+        "initrd /casper/initrd",
         "<enter>",
-        "<down>",
-        "<enter>",
-        "<enter>",
-        "<enter>",
-        "<wait1m>",
-        "poweroff"
+        "boot",
+        "<enter>"
       ],
+
       "boot_wait": "5s",
 
       "vboxmanage": [
