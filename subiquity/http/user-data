@@ -3,7 +3,9 @@ autoinstall:
   version: 1
   early-commands:
     - systemctl stop ssh
+    - hwclock --hctosys
   locale: en_US
+  timezone: America/Sao_Paulo
   identity:
     hostname: ubuntu
     username: ubuntu
@@ -24,7 +26,7 @@ autoinstall:
     preserve_sources_list: false
     primary:
       - arches: [amd64]
-        uri: "http://archive.ubuntu.com/ubuntu/"
+        uri: "http://br.archive.ubuntu.com/ubuntu/"
   storage:
     layout:
       name: lvm
