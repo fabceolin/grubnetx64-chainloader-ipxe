@@ -73,7 +73,7 @@
     - name: compile the latest ubuntu grub
       shell: |
         apt-get update
-        apt-get build-dep grub2
+        apt-get build-dep grub2 -y
         git clone https://git.launchpad.net/grub
         cd grub
         ./bootstrap
@@ -84,12 +84,12 @@
         EOF
         mkfs.msdos -C "memdisk-netboot.fat" 64
         mcopy -i "memdisk-netboot.fat" "grub-netboot.cfg" ::grub.cfg
-        CD_MODULES=" all_video boot btrfs cat chain configfile echo efifwsetup efinet ext2 fat font gettext gfxmenu gfxterm gfxterm_background gzio halt help hfsplus iso9660 jpeg keystatus loadenv loopback linux ls lsefi lsefimmap lsefisystab lssal memdisk minicmd normal ntfs part_apple part_msdos part_gpt password_pbkdf2 png reboot regexp search search_fs_uuid search_fs_file search_label sleep smbios squash4 test \true video xfs zfs zfscrypt zfsinfo"
+        CD_MODULES="all_video boot btrfs cat chain configfile echo efifwsetup efinet ext2 fat font gettext gfxmenu gfxterm gfxterm_background gzio halt help hfsplus iso9660 jpeg keystatus loadenv loopback linux ls lsefi lsefimmap lsefisystab lssal memdisk minicmd normal ntfs part_apple part_msdos part_gpt password_pbkdf2 png reboot regexp search search_fs_uuid search_fs_file search_label sleep smbios squash4 test true video xfs zfs zfscrypt zfsinfo"
         #removido o linuxefi
         CD_MODULES="$CD_MODULES cpuid play"
         CD_MODULES="$CD_MODULES tpm"
         NET_MODULES="$CD_MODULES http tftp"
-        ./grub-mkimage -O x86_64-efi -o grubnetx64.efi -d grub-core -c grub-netboot.cfg -p /grub
+        ./grub-mkimage -O x86_64-efi -o grubnetx64.efi -d grub-core -c grub-netboot.cfg -p /grub $NET_MODULES
         cp grubnetx64.efi /srv/tftp/ltsp
 
 
@@ -100,7 +100,12 @@
         make bin-x86_64-efi/ipxe.efi
         cp ./bin-x86_64-efi/ipxe.efi /srv/tftp/ltsp/ipxe-latest.efi
          
-
+    - name: compile the ubuntu 20.04 ipxe with i219-V drivers
+      shell: |
+        git clone https://github.com/fabceolin/ipxe.git ipxe-i219v
+        cd ipxe-i219v/src
+        make bin-x86_64-efi/ipxe.efi
+        cp ./bin-x86_64-efi/ipxe.efi /srv/tftp/ltsp/ipxe-i219v.efi
 
 
 
