@@ -1,15 +1,13 @@
 ---
 - hosts: all                                                                                                                                        
-   # site comandos windows => https://www.windows-commandline.com/                                                                                   
   gather_facts: true                                                                                                                                
-  become: yes
+  become: true
   vars:                                                                                                                                             
      ansible_user: ubuntu                                                                                                                           
      remote_user: ubuntu
-     become: true 
      become_user: root
      ansible_port: 3022                                                                                                                             
-     ansible_ssh_extra_args: '-o StricthostKeyChecking=no'                                                                                           
+     ansible_ssh_extra_args: '-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'                                                                                           
      ansible_host_key_checking: False                                                                                                                
      ansible_ssh_host_key_checking: False                                                                                                            
      host_key_checking: False                                                                                                                        
@@ -28,10 +26,16 @@
         state: restarted
         enabled: yes
 
-    - name: copy grub and pxe to tftp folder
+    - name: copy grub to tftp folder
       ansible.builtin.copy:
         remote_src: yes
         src: /usr/lib/grub/x86_64-efi/monolithic/grubnetx64.efi
+        dest: /srv/tftp/ltsp
+
+    - name: copy  pxe to tftp folder
+      ansible.builtin.copy:
+        remote_src: yes
+        src: /usr/lib/ipxe/ipxe.efi
         dest: /srv/tftp/ltsp
 
     - name: copy grub and pxe to tftp folder
@@ -44,4 +48,64 @@
       ansible.builtin.copy:
         src: srv/tftp/ltsp/grub.conf
         dest: /srv/tftp/grub/grub.cfg
+
+    - name: copy netboot.xyz
+      get_url:
+        url: https://boot.netboot.xyz/ipxe/netboot.xyz.efi
+        dest: /srv/tftp/grub/netboot.xyz.efi
+        mode: '0755'
+
+    - name: copy netboot.xyz snp version
+      get_url:
+        url: https://boot.netboot.xyz/ipxe/netboot.xyz-snp.efi
+        dest: /srv/tftp/grub/netboot.xyz-snp.efi
+        mode: '0755'
+
+    - name: copy netboot.xyz snp only version
+      get_url:
+        url: https://boot.netboot.xyz/ipxe/netboot.xyz-snponly.efi
+        dest: /srv/tftp/grub/netboot.xyz-snponly.efi
+        mode: '0755'
+
+    - name: Uncomment source from apt
+      command: sed -i "s/# deb-src/deb-src/" /etc/apt/sources.list
+
+    - name: compile the latest ubuntu grub
+      shell: |
+        apt-get update
+        apt-get build-dep grub2
+        git clone https://git.launchpad.net/grub
+        cd grub
+        ./bootstrap
+        ./configure --with-platform=efi
+        make 
+        cat >grub-netboot.cfg <<EOF
+        source (pxe)/grub/grub.cfg
+        EOF
+        mkfs.msdos -C "memdisk-netboot.fat" 64
+        mcopy -i "memdisk-netboot.fat" "grub-netboot.cfg" ::grub.cfg
+        CD_MODULES=" all_video boot btrfs cat chain configfile echo efifwsetup efinet ext2 fat font gettext gfxmenu gfxterm gfxterm_background gzio halt help hfsplus iso9660 jpeg keystatus loadenv loopback linux ls lsefi lsefimmap lsefisystab lssal memdisk minicmd normal ntfs part_apple part_msdos part_gpt password_pbkdf2 png reboot regexp search search_fs_uuid search_fs_file search_label sleep smbios squash4 test \true video xfs zfs zfscrypt zfsinfo"
+        #removido o linuxefi
+        CD_MODULES="$CD_MODULES cpuid play"
+        CD_MODULES="$CD_MODULES tpm"
+        NET_MODULES="$CD_MODULES http tftp"
+        ./grub-mkimage -O x86_64-efi -o grubnetx64.efi -d grub-core -c grub-netboot.cfg -p /grub
+        cp grubnetx64.efi /srv/tftp/ltsp
+
+
+    - name: compile the latest ipxe
+      shell: |
+        git clone https://github.com/ipxe/ipxe.git
+        cd ipxe/src
+        make bin-x86_64-efi/ipxe.efi
+        cp ./bin-x86_64-efi/ipxe.efi /srv/tftp/ltsp/ipxe-latest.efi
+         
+
+
+
+
+
+
+
+        
 

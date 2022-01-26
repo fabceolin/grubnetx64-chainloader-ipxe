@@ -4,6 +4,7 @@ autoinstall:
   early-commands:
     - systemctl stop ssh
     - hwclock --hctosys
+    - timedatectl set-ntp yes
   locale: en_US
   timezone: America/Sao_Paulo
   identity:

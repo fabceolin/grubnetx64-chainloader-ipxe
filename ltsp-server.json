@@ -1,17 +1,36 @@
 {
   "provisioners": [
+
     {
       "type": "shell",
       "inline": [ 
       "bash -c 'time (while ps -opid= -C apt-get > /dev/null; do sleep 1; done); sudo apt-get -y update'",
       "sudo apt-get install software-properties-common -y",
       "sudo add-apt-repository universe",
-      "sudo apt -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server isc-dhcp-server" ,
+      "sudo add-apt-repository multiverse",
+      "sudo apt-get -y install --install-recommends ltsp ipxe dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes grub-efi-amd64-signed shim-signed grub-ipxe openssh-server isc-dhcp-server p7zip-full" ,
       "sudo ltsp dnsmasq --proxy-dhcp=0",
-      "sudo ltsp image /,,/boot,subdir=boot,,/opt,subdir=opt",
+      "sudo ltsp image /,,/boot,subdir=boot,,/opt,subdir=opt &>/dev/null",
       "sudo ltsp ipxe",
       "sudo ltsp nfs",
       "sudo ltsp initrd"
+      ]
+    },
+    { 
+     "type": "ansible", 
+      "playbook_file": "grub-focal.yml",
+      "ansible_env_vars": [ "ANSIBLE_HOST_KEY_CHECKING=False", "ANSIBLE_SSH_ARGS='-o ForwardAgent=yes -o ControlMaster=auto -o ControlPersist=60s'", "ANSIBLE_NOCOLOR=True" ],
+      "local_port": 3022,
+      "extra_arguments": [
+        "--ssh-extra-args", "'-o IdentitiesOnly=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'",
+        "--extra-vars",
+        "ansible_user=ubuntu",
+        "--extra-vars",
+        "ansible_ssh_pass=ubuntu",
+        "--extra-vars",
+        "ansible_sudo_pass=ubuntu",
+        "--extra-vars",
+        "ansible_ssh_extra_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
       ]
     }
   ],
@@ -38,7 +57,7 @@
       "shutdown_command": "echo 'ubuntu' | sudo -S shutdown -P now",
       "firmware":"efi",
       "nested_virt": "true",
-      "disk_size": "20000",
+      "disk_size": "30000",
       "vrdp_bind_address": "0.0.0.0",
       "iso_interface": "sata",
       "memory":"1024",
@@ -71,6 +90,7 @@
         ["modifyvm", "{{.Name}}", "--vrdeaddress", "10.0.250.10"],
         ["modifyvm", "{{.Name}}", "--vram", "12"],
         ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
+        ["modifyvm", "{{.Name}}", "--rtcuseutc", "on"],
         ["modifyvm", "{{.Name}}", "--natpf1", "guest_ssh,tcp,,3022,,22" ]
       ]
     }
